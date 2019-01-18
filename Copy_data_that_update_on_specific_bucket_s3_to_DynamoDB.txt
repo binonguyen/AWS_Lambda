@@ -1,0 +1,19 @@
+import json
+import boto3
+
+def lambda_handler(event, context):
+    
+    bucket = event['Records'][0]['s3']['bucket']['name']                # check bucket name : bucket
+    file = event['Records'][0]['s3']['object']['key']                   # check key name : file
+    
+    s3_client = boto3.client('s3')                                      # get into S3
+    file_object = s3_client.get_object(Bucket=bucket, Key=file)         # get data from S3
+    
+    file_read = file_object['Body'].read()                              # read the data after get it from S3
+    file_transfer_dict = json.loads(file_read)                          # transfer data to dictionary , key:value
+    
+    dynamodb = boto3.resource('dynamodb')                               # get into DynamoDB
+    table = dynamodb.Table('employees')                                 # get to the table
+    
+    table.put_item(Item=file_transfer_dict)                             # put data into the table
+    
