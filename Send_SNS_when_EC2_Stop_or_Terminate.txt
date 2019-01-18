@@ -1,0 +1,16 @@
+import json
+import boto3
+
+def lambda_handler(event, context):
+    
+    ec2_id = event['detail']['instance-id']                                             #Get Id of EC2 that stop working
+    
+    client = boto3.client('sns')                                                        #Get into SNS
+    sns_arn = 'arn:aws:sns:us-east-1:943905422695:send_alert_ec2_stopTerminate'         #Topic  
+    message = " Alert, an EC2 id: " + ec2_id + ",  just stop or terminating..."         #Message
+    
+    client.publish(
+        TopicArn=sns_arn,                                                               # Send message to Topic Subcribers
+        Message=message,
+        
+        )
